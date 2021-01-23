@@ -1,12 +1,23 @@
-package maven;
+package org.mavenbaseclass;
 
 import java.awt.Robot;
 import java.io.File;
+import java.io.FileInputStream;
+
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -20,6 +31,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 public class BaseClass {
+
 	public static WebDriver driver;
 	public static Actions acc;
 	public static Robot r;
@@ -31,7 +43,6 @@ public class BaseClass {
 		System.setProperty("webdriver.chrome.driver",
 				"C:\\Users\\marag\\eclipse-workspace\\maven\\drivers\\chromedriver.exe");
 		driver = new ChromeDriver();
-		
 
 	}
 
@@ -162,9 +173,10 @@ public class BaseClass {
 	}
 
 	// 21.dropdown in selectbyvalue
-	public static void selectValue(WebElement element, String text) {
-		s = new Select(element);
-		s.selectByValue(text);
+	public static void selectValue(String text, String text1) {
+		WebElement loc = driver.findElement(By.id(text));
+		Select s = new Select(loc);
+		s.selectByValue(text1);
 	}
 
 	// 22.select by visible text
@@ -337,7 +349,125 @@ public class BaseClass {
 			}
 
 		}
+	}
 
+	// 45.to read the data from excel sheet
+	public static String excelRead(int rowNo, int cellNo) throws IOException {
+		File file = new File("C:\\Users\\marag\\eclipse-workspace\\maven\\Excelsheet\\Arun.xlsx");
+		FileInputStream fin = new FileInputStream(file);
+		Workbook w = new XSSFWorkbook(fin);
+		Sheet sheet = w.getSheet("Sheet1");
+		Row row = sheet.getRow(rowNo);
+		Cell cell = row.getCell(cellNo);
+		int cellType = cell.getCellType();
+		String value = " ";
+		if (cellType == 1) {
+			value = cell.getStringCellValue();
+
+		} else if (DateUtil.isCellDateFormatted(cell)) {
+
+			Date d = cell.getDateCellValue();
+			SimpleDateFormat s = new SimpleDateFormat("dd/mm/yyyy");
+			value = s.format(d);
+
+		} else {
+			double dd = cell.getNumericCellValue();
+			long l = (long) dd;
+			value = String.valueOf(l);
+		}
+		return value;
+	}
+
+	// to write into excel
+	public static void excelWrite(int rowNo, int cellNo, String insertvalue) throws IOException {
+		File file = new File("C:\\Users\\marag\\eclipse-workspace\\maven\\Excelsheet\\Arun.xlsx");
+		FileInputStream fin = new FileInputStream(file);
+		Workbook w = new XSSFWorkbook(fin);
+		Sheet s = w.getSheet("Sheet1");
+		s.getRow(rowNo).createCell(cellNo).setCellValue(insertvalue);
+		FileOutputStream fout = new FileOutputStream(file);
+		w.write(fout);
+		System.out.println("done successfully");
+
+	}
+
+	// 46.gettext
+	public static String getText1(WebElement element) {
+		String text = element.getText();
+
+		return text;
+	}
+
+	// 47.getAtrribute
+	public static String getAttri(String id) {
+
+		WebElement ref = driver.findElement(By.id(id));
+
+		String attribute = ref.getAttribute("value");
+		System.out.println(attribute);
+		return attribute;
+
+	}
+	// 48.findElement
+	// public static void findElement1(WebElement element,String text) {
+	// WebElement ref=driver.findElement(By.xpath(WebElementpath));
+	// ref.sendKeys(text);
+	// }
+
+	// 48.findElement
+	public static void findElementIdNormal(String WebElement) {
+		WebElement ref = driver.findElement(By.id(WebElement));
+	}
+
+	public static void findElementXpath(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.xpath(WebElement));
+		ref.sendKeys(text);
+	}
+
+	public static void findElementId(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.id(WebElement));
+		ref.sendKeys(text);
+	}
+
+	public static void findElementTag(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.tagName(WebElement));
+		ref.sendKeys(text);
+	}
+
+	public static void findElementName(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.name(WebElement));
+		ref.sendKeys(text);
+	}
+
+	public static void findElementClass(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.className(WebElement));
+		ref.sendKeys(text);
+	}
+
+	// click webElement using xpath
+	public static void findElementClickXpath(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.xpath(WebElement));
+		ref.click();
+	}
+
+	public static void findElementClickId(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.id(WebElement));
+		ref.click();
+	}
+
+	public static void findElementClickTag(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.tagName(WebElement));
+		ref.click();
+	}
+
+	public static void findElementClickName(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.name(WebElement));
+		ref.click();
+	}
+
+	public static void findElementClickClass(String WebElement, String text) {
+		WebElement ref = driver.findElement(By.className(WebElement));
+		ref.click();
 	}
 
 }
